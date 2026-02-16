@@ -6,7 +6,7 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/15 17:37:58 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/02/15 18:31:42 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/02/16 19:28:42 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,17 @@
 # define THINKING 0
 # define EATING 1
 
-int valid(int ac, char **argv);
+int             valid(int ac, char **argv);
+t_philosopher   **create_philos(int numb_philos);
+void            ft_free_table(void **table, int i);
+void            *routine(void *arg);
+void            *do_philo(t_philosopher **philos, char **argv, int nb_m_eat);
+
 typedef struct s_philosopher
 {
     int                     rang;
     int                     status;
-    struct s_philosopher    next;
-    struct s_philosopher    previous;
+    pthread_t               tid;
 }   t_philosopher;
 
 #endif
