@@ -6,48 +6,34 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/16 18:02:41 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/02/24 01:54:52 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/02/25 20:45:23 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	mutex_lock_unlock(void	*param, void *param2, pthread_mutex_t *mut,
-		int (*action)(void *param, void	*param2))
-{
-	if (pthread_mutex_lock(mut) != 0)
-		return (printf("error : mutex lockf."), 0)
-	if (!action(param, param2))
-		return (0);
-	if (pthread_mutex_unlock(mut) != 0)
-		return (printf("error : mutex unlock."), 0);
-	return (1);
-}
-
-int	doing_philo(t_pĥilosopher *philo)
+int	philo_try_eating(t_pĥilosopher *philo, pthread_mutex *first_fork,
+		pthread_mutex *second_fork)
 {
 	long long	start_time;
 	char		*status;
 
 	start_time = get_time_in_ms();
-	status = (char *)malloc(sizeof(char) * 15);
-	if (!status)
+	if (pthread_mutex_lock(*first_fork) != 0)
 		return (0);
-	if (pthread_mutex_lock(philo->left_fork) != 0)
-		return (free(status), 0);
-	if (pthread_mutex_lock(philo->right_fork) != 0
-			|| simulation_finished(philo->rules))
-		return (free(status), 0);
-	ft_strcat(status, "has taken a fork");
-	mutex_lock_unlock(&philo->rang, status, &philo->rules->write_lock, display);
-	ft_strcat(status, "is eating");
+	if (pthread_mutex_lock(*second_fork) != 0
+			|| see_dead(philo->rules->is_dead, &philo->rules->dead_lock))
+		return (0);
+	display("taken a fork", &philo->rules->write_lock, philo->rang);
 	philo->last_meal_time = get_time_in_ms();
-	mutex_lock_unlock(&philo->rang, status, &philo->rules->write_lock, display);
+	if (see_dead(philo->rules->is_dead, &philo->rules->dead_lock))
+		return (0);
+	display("is eating", &philo->rules->write_lock, philo->rang);
 	ft_usleep(philo->rules->time_to_eat);
-	if (pthread_mutex_lock(philo->left_fork) != 0)
-		return (free(status), 0);
-	if (pthread_mutex_lock(philo->right_fork) != 0)
-		return (free(status), 0);
+	if (pthread_mutex_unlock(*first_fork) != 0)
+		return (0);
+	if (pthread_mutex_unlock(*second_fork) != 0)
+		return (0);
 	return (1);
 }
 
@@ -56,26 +42,24 @@ void	*routine(void *current_philo)
 	int				should_stop;
 	t_philosopher	*philo;
 	int				timestamp;
-	char			*status;
+	pthread_mutex_t	first_fork;
+	pthread_mutex_t	second_fork;
 
-	should_stop = 0;
 	philo = (t_philosopher *)current_philo;
-	status = (char *)malloc(sizeof(char) * 20);
-	if (!status)
-		return (NULL);
-	mutex_lock_unlock(&should_stop, &philo->rules->is_dead,
-		&philo->rules->dead_lock, affectation);
+	should_stop = see_dead(philo->rules->is_dead,
+			&philo->rules->dead_lock);
 	while (should_stop == 0)
 	{
-		if (!doing_philo(philo))
+		philo_choose_fork(philo, &first_fork, &second_fork);
+		if (!philo_try_eating(philo, &first_fork, &second_fork))
 			return (NULL);
-		ft_strcat(status, "is sleeping");
-		mutex_lock_unlock(&philo->rang, status, &philo->rules->write_lock, display);
-		mutex_lock_unlock(&should_stop, &philo->rules->is_dead,
-			&philo->rules->dead_lock, affectation);
+		display("is sleeping", &philo->rules->write_lock, philo_rang);
+		should_stop = see_dead(philo->rules->is_dead,
+				&philo->rules->dead_lock);
 	}
 	return (NULL);
 }
+
 t_philosopher	*create_philos(int	numb_philos)
 {
 	int				i;
