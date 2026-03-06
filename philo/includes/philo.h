@@ -6,7 +6,7 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/15 17:37:58 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/02/24 01:17:32 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/03/05 08:06:19 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,48 +18,50 @@
 # include <stdio.h>
 # include <sys/time.h>
 # include <pthread.h>
-# define UTIL_ERROR "usage : <number_of_philosophers> <time_to_die> \
-    <time_to_eat> <time_to_sleep> [number_of_times_each_philosopher_must_eat]"
-# define NB_MUST_EAT 0
-# define SLEEPING -1
-# define THINKING 0
-# define EATING 1
-
-int             valid(int ac, char **argv);
-t_philosopher   **create_philos(int numb_philos);
-void            ft_free_table(void **table, int i);
-void            *routine(void *arg);
-void            *do_philo(t_philosopher **philos, char **argv, int nb_m_eat);
-void            *affectation(void *param, void *param2);
-void            ft_usleep(int time);
-int             simulation_finished(t_rules *rules);
-int             mutex_lock_unlock(void *param, void *param2,
-                pthread_mutex_t *mut, int (*action)(void *param,
-                    void *param2));
-long long       get_time_in_ms(void);
-void            ft_usleep(long long time_to_wait);
-
-
+# include <limits.h>
+# define UTIL_ERROR "usage : <number_of_philosophers> <time_to_die> <time_to_eat> <time_to_sleep> [number_of_times_each_philosopher_must_eat]"
+# define WAIT_TO_START 1
+# define WAIT_TO_HOLD 1
 typedef struct s_rules
 {
     int             time_to_die;
     int             time_to_eat;
     int             time_to_sleep;
+    int             number_of_time_eating;
     pthread_mutex_t *forks;
+    int             nb_philos;
+    int             nb_forks;
     int             is_dead;
+    long long       start_time;
     pthread_mutex_t dead_lock;
     pthread_mutex_t write_lock;
-}   t_rules
+    pthread_mutex_t start_lock;
+    int             start;
+}   t_rules;
 
 
 typedef struct s_philosopher
 {
     int                     rang;
     long long               last_meal_time;
-    pthread_mutex_t         *left_fork;
-    pthread_mutex_t         *right_fork;
     t_rules                 *rules;
     pthread_t               tid;
+    int                     number_time_eat;
+    pthread_mutex_t         meal_lock;
+    pthread_mutex_t         nb_eat_lock;
 }   t_philosopher;
+
+int             valid(int ac, char **argv);
+int             ft_atoll(const char *nptr);
+pthread_mutex_t *create_fork(int numb_forks);
+t_philosopher   *create_philos(int numb_philos, t_rules *rules);
+void            ft_free_table(void **table, int i);
+void            *affectation(void *param, void *param2);
+int             see_dead(t_rules *rules);
+void            display(char *status, t_rules *rules, int rang);
+long long       get_time_in_ms(void);
+void            ft_usleep(long long time_to_wait);
+void            alert_dead(t_rules *rules);
+void            ft_pthread_join(t_philosopher *philos, int numb_philos);
 
 #endif

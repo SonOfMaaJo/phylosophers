@@ -6,7 +6,7 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/16 19:09:27 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/02/25 20:04:29 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/03/05 08:03:11 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,38 @@ void	ft_free_table(void	**table, int i)
 	free(table);
 }
 
-void	see_dead(int is_dead, pthread_mutex_t *dead_lock)
+int	see_dead(t_rules *rules)
 {
 	int	res;
 
-	pthread_mutex_lock(dead_lock);
-	res = is_dead;
-	pthread_mutex_unlock(dead_lock)
+	pthread_mutex_lock(&rules->dead_lock);
+	res = rules->is_dead;
+	pthread_mutex_unlock(&rules->dead_lock);
 	return (res);
 }
 
-void	display(char *status, pthread_mutex_t *write_lock, int rang)
+void	alert_dead(t_rules *rules)
 {
-	pthread_mutex_lock(write_lock);
-	print("%ll %d %s", get_time_in_ms(), rang, status);
-	pthread_mutex_unlock(write_lock);
+	pthread_mutex_lock(&rules->dead_lock);
+	rules->is_dead = 1;
+	pthread_mutex_unlock(&rules->dead_lock);
+}
+
+void	display(char *status, t_rules *rules, int rang)
+{
+	pthread_mutex_lock(&rules->write_lock);
+	pthread_mutex_lock(&rules->dead_lock);
+	if (!rules->is_dead)
+		printf("%lld %d %s", get_time_in_ms() - rules->start_time, rang, status);
+	pthread_mutex_unlock(&rules->dead_lock);
+	pthread_mutex_unlock(&rules->write_lock);
+}
+
+void	ft_pthread_join(t_philosopher *philos, int numb_philos)
+{
+	int	i;
+
+	i = -1;
+	while (++i < numb_philos)
+		pthread_join(philos[i].tid, NULL);
 }

@@ -6,9 +6,11 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/15 17:52:14 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/02/15 18:20:04 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/03/03 15:31:55 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "philo.h"
 
 static int ft_isdigit(char c)
 {
@@ -23,7 +25,7 @@ int valid(int ac, char **av)
     int j;
 
     i = 0;
-    while (++i)
+    while (++i < ac)
     {
         j = -1;
         while (av[i][++j])
