@@ -68,5 +68,6 @@ void			philo_loop(t_philosopher *philo, pthread_mutex_t *f,
 					pthread_mutex_t *s);
 void			get_fork(t_philosopher *philo, pthread_mutex_t **f,
 					pthread_mutex_t **s);
+void			cleanup(t_philosopher *philos, t_rules *rules);
 
 #endif

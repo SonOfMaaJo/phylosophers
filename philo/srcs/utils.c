@@ -59,3 +59,24 @@ void	*affectation(void *param, void *param2)
 	(void)param2;
 	return (NULL);
 }
+
+void	cleanup(t_philosopher *philos, t_rules *rules)
+{
+	int	i;
+
+	i = -1;
+	while (++i < rules->nb_philos)
+	{
+		pthread_mutex_destroy(&philos[i].meal_lock);
+		pthread_mutex_destroy(&philos[i].nb_eat_lock);
+	}
+	i = -1;
+	while (++i < rules->nb_philos)
+		pthread_mutex_destroy(&rules->forks[i]);
+	pthread_mutex_destroy(&rules->dead_lock);
+	pthread_mutex_destroy(&rules->write_lock);
+	pthread_mutex_destroy(&rules->start_lock);
+	free(rules->forks);
+	free(philos);
+	free(rules);
+}

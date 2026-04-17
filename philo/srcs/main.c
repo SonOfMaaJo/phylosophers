@@ -6,7 +6,7 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/15 17:23:35 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/03/27 21:13:00 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/04/17 23:30:16 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,6 @@ static int	init_rules(t_rules **rules, int argc, char **argv)
 		(*rules)->number_of_time_eating = INT_MAX;
 	nb_fork = (int)ft_atoll(argv[1]);
 	(*rules)->nb_philos = nb_fork;
-	if (nb_fork == 1)
-		nb_fork++;
 	(*rules)->forks = create_fork(nb_fork);
 	(*rules)->nb_forks = nb_fork;
 	if (!(*rules)->forks || !init_mutexes(*rules))
@@ -114,5 +112,6 @@ int	main(int argc, char **argv)
 		return (free(rules), 1);
 	monitoring(philos, &rules);
 	ft_pthread_join(philos, rules->nb_philos);
+	cleanup(philos, rules);
 	return (0);
 }

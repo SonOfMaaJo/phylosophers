@@ -6,7 +6,7 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/16 18:02:41 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/03/27 21:05:00 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/04/18 00:32:26 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,21 @@
 static int	philo_try_eating(t_philosopher *philo, pthread_mutex_t *first_fork,
 		pthread_mutex_t *second_fork)
 {
-	if (pthread_mutex_lock(first_fork) != 0
-		|| pthread_mutex_lock(second_fork) != 0)
+	if (pthread_mutex_lock(first_fork) != 0)
+		return (0);
+	if (philo->rules->nb_philos == 1)
+		ft_usleep(philo->rules->time_to_die);
+	if (see_dead(philo->rules))
+		return (pthread_mutex_unlock(first_fork), 0);
+	if (pthread_mutex_lock(second_fork) != 0)
 		return (0);
 	display("taken a fork\n", philo->rules, philo->rang);
 	pthread_mutex_lock(&philo->meal_lock);
 	philo->last_meal_time = get_time_in_ms();
 	pthread_mutex_unlock(&philo->meal_lock);
 	if (see_dead(philo->rules))
-	{
-		pthread_mutex_unlock(first_fork);
-		pthread_mutex_unlock(second_fork);
-		return (0);
-	}
+		return (pthread_mutex_unlock(first_fork),
+			pthread_mutex_unlock(second_fork), 0);
 	display("is eating\n", philo->rules, philo->rang);
 	ft_usleep(philo->rules->time_to_eat);
 	if (pthread_mutex_unlock(first_fork) != 0
@@ -39,6 +41,12 @@ static int	philo_try_eating(t_philosopher *philo, pthread_mutex_t *first_fork,
 void	get_fork(t_philosopher *philo, pthread_mutex_t **first_fork,
 		pthread_mutex_t **second_fork)
 {
+	if (philo->rules->nb_forks == 1)
+	{
+		*first_fork = &philo->rules->forks[philo->rang - 1];
+		*second_fork = &philo->rules->forks[philo->rang - 1];
+		return ;
+	}
 	if (philo->rang % 2 == 0)
 	{
 		*first_fork = &philo->rules->forks[philo->rang - 2];
