@@ -6,7 +6,7 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/16 18:02:41 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/04/18 00:32:26 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/04/18 16:02:18 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,31 @@ void	get_fork(t_philosopher *philo, pthread_mutex_t **first_fork,
 		else
 			*second_fork = &philo->rules->forks[philo->rang - 2];
 	}
+}
+
+void	cleanup(t_philosopher *philos, t_rules *rules, int nb_philos)
+{
+	int	i;
+
+	i = -1;
+	if (philos)
+	{
+		while (++i < nb_philos)
+		{
+			pthread_mutex_destroy(&philos[i].meal_lock);
+			pthread_mutex_destroy(&philos[i].nb_eat_lock);
+		}
+	}
+	i = -1;
+	if (rules)
+		while (++i < rules->nb_forks)
+			pthread_mutex_destroy(&rules->forks[i]);
+	pthread_mutex_destroy(&rules->dead_lock);
+	pthread_mutex_destroy(&rules->write_lock);
+	pthread_mutex_destroy(&rules->start_lock);
+	free(rules->forks);
+	free(philos);
+	free(rules);
 }
 
 void	philo_loop(t_philosopher *philo, pthread_mutex_t *first_fork,

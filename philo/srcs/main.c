@@ -6,7 +6,7 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/15 17:23:35 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/04/17 23:30:16 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/04/18 16:07:33 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static int	init_rules(t_rules **rules, int argc, char **argv)
 	(*rules)->forks = create_fork(nb_fork);
 	(*rules)->nb_forks = nb_fork;
 	if (!(*rules)->forks || !init_mutexes(*rules))
-		return (free(*rules), 0);
+		return (cleanup(NULL, *rules, (*rules)->nb_forks), 0);
 	(*rules)->is_dead = 0;
 	(*rules)->start = 0;
 	return (1);
@@ -109,9 +109,9 @@ int	main(int argc, char **argv)
 		return (1);
 	philos = create_philos(rules->nb_philos, rules);
 	if (!philos)
-		return (free(rules), 1);
+		return (cleanup(NULL, rules, rules->nb_philos), 1);
 	monitoring(philos, &rules);
 	ft_pthread_join(philos, rules->nb_philos);
-	cleanup(philos, rules);
+	cleanup(philos, rules, rules->nb_philos);
 	return (0);
 }

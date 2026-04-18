@@ -6,7 +6,7 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/15 17:37:58 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/03/27 21:07:00 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/04/18 15:41:04 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,6 @@ void			philo_loop(t_philosopher *philo, pthread_mutex_t *f,
 					pthread_mutex_t *s);
 void			get_fork(t_philosopher *philo, pthread_mutex_t **f,
 					pthread_mutex_t **s);
-void			cleanup(t_philosopher *philos, t_rules *rules);
+void			cleanup(t_philosopher *philos, t_rules *rules, int i);
 
 #endif

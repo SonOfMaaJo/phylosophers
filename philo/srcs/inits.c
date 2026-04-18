@@ -6,7 +6,7 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/27 21:00:00 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/03/27 21:00:00 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/04/18 16:33:46 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,9 @@ t_philosopher	*create_philos(int numb_philos, t_rules *rules)
 		philos[i].number_time_eat = 0;
 		philos[i].rules = rules;
 		philos[i].last_meal_time = get_time_in_ms();
-		if (!init_philo_mutex(&philos[i]))
-			return (free(philos), NULL);
-		if (pthread_create(&philos[i].tid, NULL, routine, &philos[i]) != 0)
-			return (free(philos), NULL);
+		if (!init_philo_mutex(&philos[i])
+			|| pthread_create(&philos[i].tid, NULL, routine, &philos[i]) != 0)
+			return (cleanup(philos, NULL, i - 1), NULL);
 	}
 	return (philos);
 }
@@ -84,7 +83,11 @@ pthread_mutex_t	*create_fork(int numb_forks)
 	while (++i < numb_forks)
 	{
 		if (pthread_mutex_init(&forks[i], NULL) != 0)
+		{
+			while (--i > 0)
+				pthread_mutex_destroy(&forks[i]);
 			return (free(forks), NULL);
+		}
 	}
 	return (forks);
 }
