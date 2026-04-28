@@ -6,10 +6,10 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 16:39:22 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/02/25 19:41:40 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/04/28 13:55:48 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "philo.h"
+#include "philo_bonus.h"
 
 int	ft_atoll(const char *nptr)
 {

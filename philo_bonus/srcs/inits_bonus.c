@@ -6,23 +6,11 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/27 21:00:00 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/04/25 18:38:19 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/04/28 15:53:11 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
-
-static int	init_philo_sem(t_philosopher *philo)
-{
-	if (pthread_mutex_init(&philo->meal_lock, NULL) != 0)
-		return (0);
-	if (pthread_mutex_init(&philo->nb_eat_lock, NULL) != 0)
-	{
-		pthread_mutex_destroy(&philo->meal_lock);
-		return (0);
-	}
-	return (1);
-}
+#include "philo_bonus.h"
 
 static void	*routine(void *current_philo)
 {
@@ -35,31 +23,48 @@ static void	*routine(void *current_philo)
 			break ;
 	pid = fork();
 	if (pid == 0)
+		philo_loop(philo);
+	else
 	{
-		get_fork(philo, &first_fork, &second_fork);
-		philo_loop(philo, first_fork, second_fork);
+		while (1)
+		{
+			ft_usleep(1);
+			if (see_dead(philo->rules))
+				break;
+		}
+		kill(pid);
 	}
 	return (NULL);
 }
 
-int	set_named_sem(char *name, sem_t **sem, int val)
+t_sem_phylo *set_named_sem(char *name, int val)
 {
-	*sem = sem_open(name, O_CREAT | O_EXCL, 0666, val);
-	if (*sem == SEM_FAILED)
-		return (0);
-	return (1);
+	t_sem_phylo	*sem;
+
+	sem = (t_sem_phylo *)malloc(sizeof(t_sem_phylo));
+	if (!sem)
+		return (NULL);
+	sem->name = ft_strdup(name);
+	if (!sem->name)
+		return (free(sem), NULL);
+	sem->sem = sem_open(name, O_CREAT | O_EXCL, 0666, val);
+	if (sem->sem == SEM_FAILED)
+		return (free(sem->name), free(sem), NULL);
+	return (sem);
 }
 
-int	destroy_named(char *name, sem_t *sem)
+int	destroy_sem(t_sem_phylo *sem)
 {
 	int	error;
 
 	error = 0;
-	if (sem_close(sem) == -1)
+	if (!sem)
+		return (0);
+	if (sem_close(sem->sem) == -1)
 		error = 1;
-	if (sem_unlink(name) != -1 && !error)
-		return (1);
-	return (0);
+	if (sem_unlink(sem->name) != -1 && !error)
+		return (free(sem->name), 1);
+	return (free(sem->name), free(sem), 0);
 }
 
 t_philosopher	*create_philos(int numb_philos, t_rules *rules)
@@ -77,8 +82,8 @@ t_philosopher	*create_philos(int numb_philos, t_rules *rules)
 		philos[i].number_time_eat = 0;
 		philos[i].rules = rules;
 		philos[i].last_meal_time = get_time_in_ms();
-		if (!init_philo_sem(&philos[i])
-			|| pthread_create(&philos[i].tid, NULL, routine, &philos[i]) != 0)
+		init_sem_phylo(philos + i, i);
+		if (pthread_create(&philos[i].tid, NULL, routine, &philos[i]) != 0)
 			return (cleanup(philos, NULL, i - 1), NULL);
 	}
 	return (philos);

@@ -6,7 +6,7 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/15 17:37:58 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/04/25 18:45:38 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/04/28 15:55:46 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,20 +29,26 @@
 # define WAIT_TO_START 1
 # define WAIT_TO_HOLD 1
 
+typedef s_sem_phylo
+{
+	char	*name;
+	sem_t	*sem;
+}	t_sem_phylo;
+
 typedef struct s_rules
 {
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				number_of_time_eating;
-	sem_t			*sem_forks;
+	t_sem_phylo		*sem_forks;
 	int				nb_philos;
 	int				nb_forks;
 	int				is_dead;
 	long long		start_time;
-	sem_t			*sem_dead;
-	sem_t			*sem_ticket;
-	sem_t			*sem_write;
+	t_sem_phylo		*sem_dead;
+	t_sem_phylo		*sem_write;
+	t_sem_phylo		*sem_start;
 	int				start;
 }	t_rules;
 
@@ -53,26 +59,22 @@ typedef struct s_philosopher
 	t_rules			*rules;
 	pthread_t		tid;
 	int				number_time_eat;
-	sem_t			*meal_lock;
-	sem_t			*nb_eat_lock;
+	t_sem_phylo		*sem_meal;
+	t_sem_phylo		*sem_nb_eat;
 }	t_philosopher;
 
 int				valid(int ac, char **argv);
 int				ft_atoll(const char *nptr);
 t_philosopher	*create_philos(int numb_philos, t_rules *rules);
-int				set_named_sem(char *name, sem_t **sem, int val);
-int				destroy_named(char *name, sem_t *sem);
-void			*affectation(void *param, void *param2);
+t_sem_phylo		*set_named_sem(char *name, int val);
+int				destroy_sem(t_sem_phylo *sem);
 int				see_dead(t_rules *rules);
 void			display(char *status, t_rules *rules, int rang);
 long long		get_time_in_ms(void);
 void			ft_usleep(long long time_to_wait);
 void			alert_dead(t_rules *rules);
 void			ft_pthread_join(t_philosopher *philos, int numb_philos);
-void			philo_loop(t_philosopher *philo, pthread_mutex_t *f,
-					pthread_mutex_t *s);
-void			get_fork(t_philosopher *philo, pthread_mutex_t **f,
-					pthread_mutex_t **s);
+void			philo_loop(t_philosopher *philo);
 void			cleanup(t_philosopher *philos, t_rules *rules, int i);
 
 #endif
