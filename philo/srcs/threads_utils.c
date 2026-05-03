@@ -6,7 +6,7 @@
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/16 18:02:41 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/04/18 16:02:18 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/05/03 15:34:40 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ static int	philo_try_eating(t_philosopher *philo, pthread_mutex_t *first_fork,
 {
 	if (pthread_mutex_lock(first_fork) != 0)
 		return (0);
+	display("taken a fork\n", philo->rules, philo->rang);
 	if (philo->rules->nb_philos == 1)
 		ft_usleep(philo->rules->time_to_die);
 	if (see_dead(philo->rules))

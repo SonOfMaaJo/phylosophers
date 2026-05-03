@@ -32,9 +32,9 @@ The program takes 4 or 5 arguments:
 ```
 
 ## Resources
-- **POSIX Threads (pthreads)**: Documentation for thread creation and management.
-- **Mutexes**: Documentation for synchronization primitives to prevent data races.
-- **Valgrind / ThreadSanitizer**: Tools used for memory leak detection and thread safety verification.
+- [all materials and concepts for project](https://medium.com/@ruinadd/philosophers-42-guide-the-dining-philosophers-problem-893a24bc0fe2)
+- [keys concepts](https://42-fran-byte-f94097.gitlab.io/docs/philosophers/philosophers-approach-en/#/)
+- [tester and visualizer](https://rom98759.github.io/Philosophers-visualizer/)
 
 ### AI Usage
 AI (Gemini CLI) was used during this project for the following tasks:
