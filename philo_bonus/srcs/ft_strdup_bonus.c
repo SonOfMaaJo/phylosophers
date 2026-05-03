@@ -1,30 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   time_utils.c                                       :+:      :+:    :+:   */
+/*   ft_strdup_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/24 00:33:20 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/03/27 20:54:30 by vnaoussi         ###   ########.fr       */
+/*   Created: 2025/11/11 15:56:36 by vnaoussi          #+#    #+#             */
+/*   Updated: 2026/04/29 16:39:49 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "philo_bonus.h"
 
-#include "philo.h"
-
-long long	get_time_in_ms(void)
+char	*ft_strdup(const char *s)
 {
-	struct timeval	tv;
+	size_t	i;
+	char	*copy;
 
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
-}
-
-void	ft_usleep(long long time_to_wait)
-{
-	long long	start_time;
-
-	start_time = get_time_in_ms();
-	while ((get_time_in_ms() - start_time) < time_to_wait)
-		usleep(500);
+	i = 0;
+	copy = (char *)malloc(sizeof(char) * (ft_strlen(s) + 1));
+	if (copy != NULL)
+	{
+		while (s[i++])
+			copy[i - 1] = ((char *)s)[i - 1];
+		copy[i - 1] = '\0';
+	}
+	return (copy);
 }

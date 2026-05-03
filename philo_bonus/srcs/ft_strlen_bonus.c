@@ -1,41 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   valids.c                                           :+:      :+:    :+:   */
+/*   ft_strlen_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/15 17:52:14 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/04/25 18:39:48 by vnaoussi         ###   ########.fr       */
+/*   Created: 2025/11/09 19:00:16 by vnaoussi          #+#    #+#             */
+/*   Updated: 2026/04/29 16:39:09 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "philo_bonus.h"
 
-#include "philo.h"
-
-static int	ft_isdigit(char c)
+size_t	ft_strlen(const char *s)
 {
-	if (c >= '0' && c <= '9')
-		return (1);
-	return (0);
-}
+	size_t	len;
 
-int	valid(int ac, char **av)
-{
-	int	i;
-	int	j;
-
-	i = 0;
-	while (++i < ac)
-	{
-		j = -1;
-		while (av[i][++j])
-		{
-			if (!ft_isdigit(av[i][j]))
-			{
-				printf("parameter should be only integer.\n");
-				return (0);
-			}
-		}
-	}
-	return (1);
+	len = 0;
+	while (s[len])
+		len++;
+	return (len);
 }

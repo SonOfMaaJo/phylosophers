@@ -6,13 +6,17 @@ INCLUDES    = -I includes
 SRCS_DIR    = srcs/
 OBJS_DIR    = objs/
 
-SRCS_FILES  = ft_atoll.c \
-              inits.c \
-              main.c \
-              threads_utils.c \
-              time_utils.c \
-              utils.c \
-              valids.c
+SRCS_FILES  = ft_atoll_bonus.c \
+              inits_bonus.c \
+              main_bonus.c \
+              threads_utils_bonus.c \
+              time_utils_bonus.c \
+              utils_bonus.c \
+              valids_bonus.c \
+			  ft_strlen_bonus.c \
+			  ft_strlcat_bonus.c \
+			  ft_strdup_bonus.c \
+			  ft_itoa_bonus.c
 
 SRCS        = $(addprefix $(SRCS_DIR), $(SRCS_FILES))
 OBJS        = $(SRCS:$(SRCS_DIR)%.c=$(OBJS_DIR)%.o)
@@ -33,6 +37,8 @@ clean:
 
 fclean: clean
 	rm -f $(NAME)
+
+bonus : all
 
 re: fclean all
 

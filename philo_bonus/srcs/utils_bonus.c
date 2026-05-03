@@ -1,32 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   utils_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vnaoussi <vnaoussi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/16 19:09:27 by vnaoussi          #+#    #+#             */
-/*   Updated: 2026/04/28 14:54:55 by vnaoussi         ###   ########.fr       */
+/*   Updated: 2026/04/30 11:35:00 by vnaoussi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 int	see_dead(t_rules *rules)
 {
-	int	res;
-
-	sem_wait(rules->sem_dead->sem);
-	res = rules->is_dead;
-	sem_post(rules->sem_dead->sem);
-	return (res);
+	(void)rules;
+	return (0);
 }
 
 void	alert_dead(t_rules *rules)
 {
-	sem_wait(rules->sem_dead->sem)
-	rules->is_dead = 1;
-	sem_post(rules->sem_dead->sem);
+	(void)rules;
 }
 
 void	display(char *status, t_rules *rules, int rang)
@@ -34,21 +28,27 @@ void	display(char *status, t_rules *rules, int rang)
 	long long	time;
 
 	sem_wait(rules->sem_write->sem);
-	sem_wait(rules->sem_dead->sem);
-	if (!rules->is_dead)
-	{
-		time = get_time_in_ms() - rules->start_time;
-		printf("%lld %d %s", time, rang, status);
-	}
-	pthread_mutex_unlock(rules->sem_dead->sem);
-	pthread_mutex_unlock(rules->sem_write->sem);
+	time = get_time_in_ms() - rules->start_time;
+	printf("%lld %d %s", time, rang, status);
+	fflush(stdout);
+	if (status[0] != 'd')
+		sem_post(rules->sem_write->sem);
 }
 
-void	ft_pthread_join(t_philosopher *philos, int numb_philos)
+char	*set_named_sem_phylo(char **name, int pos)
 {
-	int	i;
+	char	*name_tmp;
+	int		len;
 
-	i = -1;
-	while (++i < numb_philos)
-		pthread_join(philos[i].tid, NULL);
+	name_tmp = ft_itoa(pos);
+	if (!name_tmp)
+		return (NULL);
+	len = ft_strlen(name_tmp) + 7;
+	*name = (char *)malloc(sizeof(char) * len);
+	if (!(*name))
+		return (free(name_tmp), NULL);
+	memset(*name, 0, len);
+	ft_strlcat(*name, "/sem_", len);
+	ft_strlcat(*name, name_tmp, len);
+	return (free(name_tmp), *name);
 }
